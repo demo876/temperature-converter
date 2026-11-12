@@ -17,51 +17,54 @@ public class Main {
 
         System.out.print("Choose conversion: ");
 
+        if (!scanner.hasNextLine()) {
+            System.out.println("No input received. Please run interactively.");
+            return;
+        }
+
         try {
-            int choice = Integer.parseInt(scanner.nextLine());
+            int choice = Integer.parseInt(scanner.nextLine().trim());
 
             System.out.print("Enter temperature: ");
-            double temperature = Double.parseDouble(scanner.nextLine());
 
-            double result;
+            if (!scanner.hasNextLine()) {
+                System.out.println("No temperature received.");
+                return;
+            }
+
+            double temperature =
+                    Double.parseDouble(scanner.nextLine().trim());
 
             switch (choice) {
 
                 case 1:
-                    result = TemperatureConverter
-                            .celsiusToFahrenheit(temperature);
-                    System.out.println("Fahrenheit: " + result);
+                    System.out.println("Fahrenheit: " +
+                            TemperatureConverter.celsiusToFahrenheit(temperature));
                     break;
 
                 case 2:
-                    result = TemperatureConverter
-                            .fahrenheitToCelsius(temperature);
-                    System.out.println("Celsius: " + result);
+                    System.out.println("Celsius: " +
+                            TemperatureConverter.fahrenheitToCelsius(temperature));
                     break;
 
                 case 3:
-                    result = TemperatureConverter
-                            .celsiusToKelvin(temperature);
-                    System.out.println("Kelvin: " + result);
+                    System.out.println("Kelvin: " +
+                            TemperatureConverter.celsiusToKelvin(temperature));
                     break;
 
                 case 4:
-                    result = TemperatureConverter
-                            .kelvinToCelsius(temperature);
-                    System.out.println("Celsius: " + result);
+                    System.out.println("Celsius: " +
+                            TemperatureConverter.kelvinToCelsius(temperature));
                     break;
 
                 default:
-                    System.out.println("Invalid menu choice.");
+                    System.out.println("Invalid choice!");
             }
 
         } catch (NumberFormatException e) {
-            System.out.println("Please enter a valid number.");
-
+            System.out.println("Invalid input! Enter a valid number.");
         } catch (IllegalArgumentException e) {
             System.out.println("Error: " + e.getMessage());
         }
-
-        scanner.close();
     }
 }
