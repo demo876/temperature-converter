@@ -1,0 +1,62 @@
+
+name: Temperature Converter CI-CD
+
+on:
+  push:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+jobs:
+
+  # ACTION 1: BUILD AND TEST
+  build-and-test:
+    name: Maven Build and JUnit Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout GitHub Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      - name: Run JUnit Test Cases
+        run: mvn clean test
+
+      - name: Build Maven Package
+        run: mvn package -DskipTests
+
+  # ACTION 2: DOCKER BUILD AND PUSH
+  docker-build-push:
+    name: Docker Build and Push
+    runs-on: ubuntu-latest
+
+    needs: build-and-test
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/temperature-converter:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/temperature-converter:${{ github.sha }}
